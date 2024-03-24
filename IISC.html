@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transportation Image Object Detection</title>
+  <link rel="stylesheet" type="text/css" href="iisc.css">
+  <style>
+    /* Additional CSS styles */
+    body {
+      display: flex;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    fieldset {
+      width: 90%; /* Set a width for the fieldset */
+      max-width: 600px; /* Set a maximum width for the fieldset */
+      padding: 20px;
+    }
+
+    legend {
+      font-weight: bold;
+      font-size: 1.2em;
+      margin-bottom: 10px;
+    }
+
+    footer {
+      margin-top: auto; /* Push the footer to the bottom */
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      padding: 1rem 0;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Transportation Image Object Detection</h1>
+  </header>
+  <main>
+    <fieldset>
+      <legend>PLEASE UPLOAD THE IMAGE</legend>
+      <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" id="imageInput" accept="image/*" required>
+        <button type="submit">Upload Image</button>
+      </form>
+      <div id="imageContainer">
+        <!-- Uploaded image will be displayed here -->
+      </div>
+      <div id="detectionResults">
+        <!-- Object detection results will be displayed here -->
+      </div>
+    </fieldset>
+  </main>
+  <footer>
+    <p>Indian Institute of Science, Bengaluru</p>
+  </footer>
+  <script>
+    // JavaScript code goes here
+    document.getElementById('uploadForm').addEventListener('submit', function(event) {
+      event.preventDefault(); // Prevent the default form submission
+
+      const formData = new FormData();
+      const fileInput = document.getElementById('imageInput');
+      formData.append('image', fileInput.files[0]);
+
+      // Send the form data to the backend for processing
+      fetch('/process-image', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Update the UI with the processed image or detection results
+        const imageContainer = document.getElementById('imageContainer');
+        imageContainer.innerHTML = `<img src="${data.processedImage}" alt="Processed Image">`;
+
+        const detectionResults = document.getElementById('detectionResults');
+        detectionResults.innerHTML = `<pre>${JSON.stringify(data.detectionResults, null, 2)}</pre>`;
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    });
+  </script>
+</body>
+</html>
